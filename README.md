@@ -2,8 +2,8 @@
 
 Current features:
 
--Get a list of product listings from an API server
--Add a new product/product listing.
+- Get a list of product listings from an API server
+- Add a new product/product listing.
 
 To be added:
   - Add a option to delete a product.
