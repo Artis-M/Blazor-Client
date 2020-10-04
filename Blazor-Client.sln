@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InventoryService", "Invento
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BlazorClient", "BlazorClient", "{EDA95FE2-7F9E-45C3-ACED-48969C0C17A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{069C7ECE-CFBF-4869-A458-F4A8CEDED897}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{069C7ECE-CFBF-4869-A458-F4A8CEDED897}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

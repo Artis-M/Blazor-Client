@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 using InventoryService.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace InventoryService.Controllers
 {
@@ -35,7 +36,24 @@ namespace InventoryService.Controllers
         [HttpPost("add/product")]
         public void PostProduct([FromBody] Product product)
         {
-            inventoryManager.AddProduct(product);
+            var re = this.Request;
+            var headers = re.Headers;
+            try
+            {
+                string token = headers.GetCommaSeparatedValues("token").First();
+                     Console.WriteLine(token + " token value");
+                if (token.Equals("test"))
+                {
+                    Console.WriteLine("Success");
+                    inventoryManager.AddProduct(product);
+                    Console.WriteLine(product.ProductID);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Wack");
+            }
+          
         }
     }
 }

@@ -8,11 +8,11 @@ namespace BlazorApp.Data
 {
     interface IInventoryService
     {
-        public Task<List<ProductListing>> getProductListings();
+        public Task<List<ProductListing>> getProductListings(string token);
 
-        public List<Product> getProducts();
+        public List<Product> getProducts(string token);
 
-        public Task addProduct(Product product);
+        public Task addProduct(Product product, String token);
 
     }
 }

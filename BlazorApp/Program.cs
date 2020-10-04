@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using BlazorApp.Data;
+using BlazorApp.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BlazorApp
 {
@@ -19,8 +21,10 @@ namespace BlazorApp
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddSingleton<IInventoryService, InventoryService>();
-
-            await builder.Build().RunAsync();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProvider>();
+            builder.Services.AddAuthorizationCore();
+                await builder.Build().RunAsync();
         }
     }
 }
