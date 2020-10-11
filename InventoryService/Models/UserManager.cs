@@ -36,7 +36,15 @@ namespace InventoryService.Models
 
         public User checkUser(string username, string password)
         {
-         User userBuffer =  users.First(user => user.Username.Equals(username));
+            User userBuffer = new User();
+            try
+            {
+               userBuffer = users.First(user => user.Username.Equals(username));
+            }
+        catch(Exception e)
+            {
+
+            }
             if(userBuffer == null)
             {
 

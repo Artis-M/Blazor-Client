@@ -1,7 +1,6 @@
 @page "/productlistings"
 @using BlazorApp.Data
 @using BlazorApp.Models
-@using BlazorApp.Authentication
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Text.Json
@@ -10,77 +9,166 @@
 @inject AuthenticationStateProvider Authentication
 @inject IJSRuntime JsRuntime
 @attribute [Authorize]
-            <h3>Product Listings</h3>
-            <ul>
-                <li>Reserved - Product quantity that is included included in an order</li>
-                <li>Available - Available quantity of products</li>
-                <li>Available - Available quantity of products ignoring orders</li>
-            </ul>
-            <h6>Add new product</h6>
-            <div class="row">
-                <EditForm class="s12" Model="@newProdcut" OnValidSubmit="@addProduct">
-                    <div class="row">
-                        <div class="input-field col s5">
-                            <InputText placeholder="Price" @bind-Value="newProdcut.Name"></InputText>
-                        </div>
-                        <div class="input-field col s5">
-                            <InputNumber placeholder="Price" @bind-Value="newProdcut.Price"></InputNumber>
-                        </div>
-                        <div class="input-field col s2">
-                            <button class="btn" type="submit">Add</button>
-                        </div>
-                    </div>
-                </EditForm>
+<h3>Product Listings</h3>
+<ul>
+    <li>Reserved - Product quantity that is included included in an order</li>
+    <li>Available - Available quantity of products</li>
+    <li>Available - Available quantity of products ignoring orders</li>
+</ul>
+<h6>Add new product</h6>
+<div class="row">
+    <EditForm class="s12" Model="@newProdcut" OnValidSubmit="@addProduct">
+        <div class="row">
+            <div class="input-field col s5">
+                <InputText placeholder="Name" @bind-Value="newProdcut.Name"></InputText>
             </div>
-
-            <div class="row">
-                <div class="s12">
-                    @if (productListings == null)
-                    {
-                        <p><em>Loading data from webserver...</em></p>
-                    }
-                    else
-                    {
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Price</th>
-                                    <th>AvailableQuantity</th>
-                                    <th>Reserved</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in productListings)
-                                {
-                                    <tr>
-                                        <td>@item.product.ProductID</td>
-                                        <td>@item.product.Name</td>
-                                        <td>@item.product.Price</td>
-                                        <td>@item.AvailableQuantity</td>
-                                        <td>@item.Reserved</td>
-                                        <td>@item.TotalQuantity</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                </div>
+            <div class="input-field col s5">
+                <label>Price:</label>
+                <InputNumber placeholder="Price" @bind-Value="newProdcut.Price"></InputNumber>
             </div>
+            <div class="input-field col s2">
+                <button class="btn" type="submit">Add</button>
+            </div>
+        </div>
+    </EditForm>
+</div>
 
-            @code {
-                private List<ProductListing> productListings;
-                private Product newProdcut = new Product();
-                private User cachedUser;
-                protected override async Task OnInitializedAsync()
-                {
-                    cachedUser = JsonSerializer.Deserialize<User>(await JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "currentUser"));
-                    productListings = await InventoryService.getProductListings(cachedUser.Token);
-                }
-                public void addProduct()
-                {
-                    InventoryService.addProduct(newProdcut, cachedUser.Token);
-                }
-            }
+<div class="row">
+    <div class="s12">
+        @if (productListings == null)
+        {
+            <p><em>Loading data from webserver...</em></p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>AvailableQuantity</th>
+                        <th>Reserved</th>
+                        <th>Total</th>
+                        <th></th>
+                        <th>Edit Amount</th>
+                        <th>Edit Name</th>
+                        <th>Edit Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in productListings)
+                    {
+                        <tr>
+                            <td>@item.product.ProductID</td>
+                            <td>@item.product.Name</td>
+                            <td>@item.product.Price</td>
+                            <td>@item.AvailableQuantity</td>
+                            <td>@item.Reserved</td>
+                            <td>@item.TotalQuantity</td>
+                            <td>
+                                <button class="btn-small red" @onclick="@(()=>removeProductListing(item))">Delete</button>
+                            </td>
+                            <td>
+                                <form @onsubmit="@(() => editProductListingQuantity(item))">
+                                    <div class="input-field col s6">
+
+                                        <input type="number" placeholder="Value" @oninput="@((arg) => {
+                                                                                                 try{
+                                                                                                     newValue = Int32.Parse((string)arg.Value);
+                                                                                                 } catch(Exception e)
+                                                                                                 {
+
+                                                                                                 }
+                                                                                             })" />
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <button class="btn-small" type="submit">Adjust Quantity</button>
+                                    </div>
+                                </form>
+                            </td>
+                            <td>
+                                <form @onsubmit="@(() => editProductListingName(item))">
+                                    <div class="input-field col s6">
+                                        <input type="text" placeholder="New Name" @oninput="@((arg) => { newName = (string)arg.Value; })" />
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <button class="btn-small" type="submit">Change Name</button>
+                                    </div>
+                                </form>
+                            </td>
+                            <td>
+                                <form @onsubmit="@(() => editProductListingPrice(item))">
+                                    <div class="input-field col s6">
+
+                                        <input type="number" placeholder="Value" @oninput="@((arg) => {
+                                                                                                 try{
+                                                                                                     newPrice = Int32.Parse((string)arg.Value);
+                                                                                                 } catch(Exception e)
+                                                                                                 {
+
+                                                                                                 }
+                                                                                             })" />
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <button class="btn-small" type="submit">Adjust Price</button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    private List<ProductListing> productListings;
+    private Product newProdcut = new Product();
+    private User cachedUser;
+    private int newValue = new int();
+    private int newPrice = new int();
+    private string newName = new string("");
+    protected override async Task OnInitializedAsync()
+    {
+        cachedUser = JsonSerializer.Deserialize<User>(await JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "currentUser"));
+        await getProductListings();
+    }
+    private async Task getProductListings()
+    {
+        Console.WriteLine(cachedUser.Token);
+        productListings = await InventoryService.getProductListings(cachedUser.Token);
+    }
+    private async Task addProduct()
+    {
+        await InventoryService.addProduct(newProdcut, cachedUser.Token);
+        await getProductListings();
+    }
+    private async Task removeProductListing(ProductListing productListing)
+    {
+        await InventoryService.removeProductListing(productListing, cachedUser.Token);
+        await getProductListings();
+    }
+    private async Task editProductListingQuantity(ProductListing productListing)
+    {
+        productListing.TotalQuantity += newValue;
+        await InventoryService.editProductListing(productListing, cachedUser.Token);
+        newValue = 0;
+        await getProductListings();
+    }
+    private async Task editProductListingName(ProductListing productListing)
+    {
+        productListing.product.Name = newName;
+        await InventoryService.editProductListingName(productListing, cachedUser.Token);
+        newName = "";
+        await getProductListings();
+    }
+    private async Task editProductListingPrice(ProductListing productListing)
+    {
+        productListing.product.Price = newPrice;
+        await InventoryService.editProductListingPrice(productListing, cachedUser.Token);
+        newPrice = 0;
+        await getProductListings();
+    }
+}

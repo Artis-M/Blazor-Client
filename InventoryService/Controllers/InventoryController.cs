@@ -21,8 +21,25 @@ namespace InventoryService.Controllers
         [HttpGet("listings")]
         public string GetListings()
         {
-            string rep = JsonSerializer.Serialize(inventoryManager.GetProductListings());
-            return rep;
+            var re = this.Request;
+            var headers = re.Headers;
+            try
+            {
+                string token = headers.GetCommaSeparatedValues("token").First();
+                Console.WriteLine(token + " token value");
+                if (token.Equals("test"))
+                {
+                    string rep = JsonSerializer.Serialize(inventoryManager.GetProductListings());
+                    return rep;
+                }
+                return "Invalid token: " + token;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Invalid Token, is it blank?"); 
+            }
+            return "Invalid token";
         }
         // GET api/inventory/products
         [HttpGet("products")]
@@ -51,9 +68,97 @@ namespace InventoryService.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine("Wack");
+                Console.WriteLine("Invalid Token");
             }
           
+        }
+        [HttpPost("remove/productListing")]
+        public void RemoveProductListing([FromBody] ProductListing productListing)
+        {
+            var re = this.Request;
+            var headers = re.Headers;
+            try
+            {
+                string token = headers.GetCommaSeparatedValues("token").First();
+                Console.WriteLine(token + " token value");
+                if (token.Equals("test"))
+                {
+                    Console.WriteLine("Success");
+                    inventoryManager.removeProductListing(productListing);
+                    Console.WriteLine($"{productListing.product.Name} to be removed");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Invalid Token");
+            }
+
+        }
+        [HttpPost("edit/productListing")]
+        public void EditProductListing([FromBody] ProductListing productListing)
+        {
+            var re = this.Request;
+            var headers = re.Headers;
+            try
+            {
+                string token = headers.GetCommaSeparatedValues("token").First();
+                Console.WriteLine(token + " token value");
+                if (token.Equals("test"))
+                {
+                    Console.WriteLine("Success");
+                    inventoryManager.editProductListing(productListing);
+                    Console.WriteLine($"{productListing.product.Name} to be edited");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Invalid Token");
+            }
+
+        }
+        [HttpPost("edit/productListingName")]
+        public void EditProductListingName([FromBody] ProductListing productListing)
+        {
+            var re = this.Request;
+            var headers = re.Headers;
+            try
+            {
+                string token = headers.GetCommaSeparatedValues("token").First();
+                Console.WriteLine(token + " token value");
+                if (token.Equals("test"))
+                {
+                    Console.WriteLine("Success");
+                    inventoryManager.editProductListingName(productListing);
+                    Console.WriteLine($"{productListing.product.Name} to be edited");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Invalid Token");
+            }
+
+        }
+        [HttpPost("edit/productListingPrice")]
+        public void EditProductListingPrice([FromBody] ProductListing productListing)
+        {
+            var re = this.Request;
+            var headers = re.Headers;
+            try
+            {
+                string token = headers.GetCommaSeparatedValues("token").First();
+                Console.WriteLine(token + " token value");
+                if (token.Equals("test"))
+                {
+                    Console.WriteLine("Success");
+                    inventoryManager.editProductListingPrice(productListing);
+                    Console.WriteLine($"{productListing.product.Name} to be edited");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Invalid Token");
+            }
+
         }
     }
 }

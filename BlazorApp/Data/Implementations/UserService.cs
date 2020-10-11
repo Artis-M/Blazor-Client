@@ -12,25 +12,23 @@ namespace BlazorApp.Data
     {
         HttpClient http = new HttpClient
         {
-            BaseAddress = new Uri("https://localhost:5001/users/")
+            BaseAddress = new Uri("https://localhost:5001/api/users/")
         };
         public async Task<User> Validate(string username, string password)
         {
             http.DefaultRequestHeaders.Add("username", username);
             http.DefaultRequestHeaders.Add("password", password);
-            // User user = JsonSerializer.Deserialize<User>(await http.GetStringAsync("token"));
-            //placeholder for testing
-            User user = new User
-            {
-                Username = "admin",
-                Token = "test"
-            };
+            User user = new User();
+            user = JsonSerializer.Deserialize<User>(await http.GetStringAsync("token"));
             Console.WriteLine("Getting login");
-            if (user == null)
+            if (user.Token == null || user.Token.Equals(""))
             {
                 throw new Exception("Incorrect credentials");
             }
-            return user;
+            else
+            {
+                return user;
+            }
         }
     }
 }

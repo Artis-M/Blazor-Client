@@ -8,8 +8,8 @@
 
 <AuthorizeView>
     <NotAuthorized>
-        <div class="row">
-            <form>
+        <div class="row login-row">
+            <form @onsubmit="PerformLogin">
                 <div class="input-field">
                     <input type="text" placeholder="Username" @bind-value="username" />
                 </div>
@@ -18,9 +18,9 @@
                 </div>
                 <div class="">
                     <div style="color:red">@errorMessage</div>
-                    <a href="" @onclick="PerformLogin">
+                    <button type="submit" class="btn-small">
                         Login
-                    </a>
+                    </button>
                 </div>
 
             </form>
@@ -38,7 +38,7 @@
         errorMessage = "";
         try
         {
-            ((AuthenticationProvider)AuthenticationStateProvider).ValidateLogin(username, password);
+            await ((AuthenticationProvider)AuthenticationStateProvider).ValidateLogin(username, password);
             username = "";
             password = "";
         }

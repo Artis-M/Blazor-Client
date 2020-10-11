@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http.Features;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -149,8 +150,75 @@ namespace InventoryService.Models
                     return false;
                 }
             }
-            products.First(product => product.ProductID == productID);
+            products.Remove(products.First(product => product.ProductID == productID));
+            
             return true;
+        }
+        public bool removeProductListing(ProductListing productListing)
+        {
+            try
+            {
+                productListings.Remove(productListings.First(item => item.product.ProductID == productListing.product.ProductID));
+                WriteProductListingsToFile();
+                removeProduct(productListing.product.ProductID);
+                Console.WriteLine("Listing Deleted");
+                return true;
+            }
+            catch(Exception e)
+            {
+              
+            }
+            return false;
+
+        }
+        public void editProductListing(ProductListing productListing)
+        {
+            try
+            {
+                productListings.Remove(productListings.First(item => item.product.ProductID == productListing.product.ProductID));
+                productListings.Add(productListing);
+                WriteProductListingsToFile();
+            }
+            catch(Exception e)
+            {
+
+            }
+        }
+        public void editProductListingName(ProductListing productListing)
+        {
+            try
+            {
+                productListings.Remove(productListings.First(item => item.product.ProductID == productListing.product.ProductID));
+                productListings.Add(productListing);
+               Product toEditProduct = products.First(item => item.ProductID == productListing.product.ProductID);
+                products.Remove(toEditProduct);
+                toEditProduct.Name = productListing.product.Name;
+                products.Add(toEditProduct);
+                WriteProductsToFile();
+                WriteProductListingsToFile();
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+        public void editProductListingPrice(ProductListing productListing)
+        {
+            try
+            {
+                productListings.Remove(productListings.First(item => item.product.ProductID == productListing.product.ProductID));
+                productListings.Add(productListing);
+                Product toEditProduct = products.First(item => item.ProductID == productListing.product.ProductID);
+                products.Remove(toEditProduct);
+                toEditProduct.Price = productListing.product.Price;
+                products.Add(toEditProduct);
+                WriteProductsToFile();
+                WriteProductListingsToFile();
+            }
+            catch (Exception e)
+            {
+
+            }
         }
         //Returns various lists.
         public List<ProductListing> GetProductListings()

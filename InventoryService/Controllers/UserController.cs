@@ -36,7 +36,7 @@ namespace InventoryService.Controllers
             clientUser userToSend = new clientUser
             {
                 Username = buffer.Username,
-            Password = buffer.Password
+            Token = buffer.Token
             };
           
             string json = JsonSerializer.Serialize(userToSend);
@@ -45,7 +45,7 @@ namespace InventoryService.Controllers
         struct clientUser
         {
             public string Username { get; set; }
-            public string Password { get; set; }
+            public string Token { get; set; }
         }
     }
     }

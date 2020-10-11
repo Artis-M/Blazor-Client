@@ -25,7 +25,7 @@ namespace BlazorApp.Authentication
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var identity = new ClaimsIdentity();
+            ClaimsIdentity identity = new ClaimsIdentity();
             if (cachedUser == null)
             {
                 string userAsJson = await jsRuntime.InvokeAsync<string>("sessionStorage.getItem", "currentUser");

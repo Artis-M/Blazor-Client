@@ -19,10 +19,19 @@ namespace BlazorApp.Data
         };
         public async Task<List<ProductListing>> getProductListings(string token)
         {
-            List<ProductListing> listings;
+            List<ProductListing> listings = new List<ProductListing>();
             http.DefaultRequestHeaders.Add("token", token);
-            listings = JsonSerializer.Deserialize<List<ProductListing>>(await http.GetStringAsync("api/inventory/listings"));
-            listings.OrderByDescending(item => item.product.Name).ToList();
+            string response = await http.GetStringAsync("api/inventory/listings");
+            try
+            {
+                listings = JsonSerializer.Deserialize<List<ProductListing>>(response);
+                listings = listings.OrderByDescending(item => item.product.ProductID).ToList();
+                return listings;
+            }
+            catch (Exception e)
+            {
+
+            }
             return listings;
         }
 
@@ -30,10 +39,34 @@ namespace BlazorApp.Data
         {
             throw new NotImplementedException();
         }
-        public async Task addProduct(Product product, String token)
+        public async Task addProduct(Product product, string token)
         {
             http.DefaultRequestHeaders.Add("token", token);
             await http.PostAsJsonAsync("api/inventory/add/product", product);
+        }
+
+        public async Task removeProductListing(ProductListing productListing, string token)
+        {
+            http.DefaultRequestHeaders.Add("token", token);
+            await http.PostAsJsonAsync("api/inventory/remove/productListing", productListing);
+        }
+
+        public async Task editProductListing(ProductListing productListing, string token)
+        {
+            http.DefaultRequestHeaders.Add("token", token);
+            await http.PostAsJsonAsync("api/inventory/edit/productListing", productListing);
+        }
+
+        public async Task editProductListingName(ProductListing productListing, string token)
+        {
+            http.DefaultRequestHeaders.Add("token", token);
+            await http.PostAsJsonAsync("api/inventory/edit/productListingName", productListing);
+        }
+
+        public async Task editProductListingPrice(ProductListing productListing, string token)
+        {
+            http.DefaultRequestHeaders.Add("token", token);
+            await http.PostAsJsonAsync("api/inventory/edit/productListingPrice", productListing);
         }
     }
 }

@@ -1,1 +1,9 @@
-﻿
+﻿.main {
+    margin-top: 4pt;
+    margin-bottom: 4pt;
+    margin-left: 12pt;
+    margin-left: 12pt;
+}
+.login-row{
+    width:35%;
+}
