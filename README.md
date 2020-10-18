@@ -9,9 +9,9 @@ Current features:
 - Add a option to delete a product.
 - Add/Remove quantity to a product.
 - Edit name of an product.
+- Orders page where orders can be accepted or canceled.
 
 To be added:
 
   - Generate unique tokens with expiry
-  - Add a orders page where orders can be completed or canceled.
   - Fix the CSS and make the UI more efficent.
