@@ -34,11 +34,6 @@ namespace BlazorApp.Data
             }
             return listings;
         }
-
-        public List<Product> getProducts(string token)
-        {
-            throw new NotImplementedException();
-        }
         public async Task addProduct(Product product, string token)
         {
             http.DefaultRequestHeaders.Add("token", token);

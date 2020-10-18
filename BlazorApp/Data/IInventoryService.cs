@@ -10,8 +10,6 @@ namespace BlazorApp.Data
     {
         public Task<List<ProductListing>> getProductListings(string token);
 
-        public List<Product> getProducts(string token);
-
         public Task addProduct(Product product, string token);
 
         public Task removeProductListing(ProductListing productListing, string token);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlazorApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,14 +11,17 @@ namespace BlazorApp.Models
         public List<OrderLine> orderLine { get; set; }
         public int OrderID { get; set; }
 
-        public double OrderTotal;
+        public bool IsAccepted { get; set; }
+        public bool IsCancelled { get; set; }
 
-        public Order()
+        public double OrderTotal { get; set; }
+
+        public void CalculatePrice()
         {
-            orderLine.ForEach(delegate (OrderLine orderLine)
+            foreach (var orderItem in orderLine)
             {
-                OrderTotal += orderLine.product.Price;
-            });
+                OrderTotal += orderItem.product.Price;
+            }
         }
     }
 }

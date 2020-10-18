@@ -1,0 +1,103 @@
+﻿@page "/orders"
+@using BlazorApp.Data
+@using BlazorApp.Models
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Text.Json
+@inject NavigationManager navMan
+@inject IOrderService OrderService
+@inject AuthenticationStateProvider Authentication
+@inject IJSRuntime JsRuntime
+@attribute [Authorize]
+<h3>Orders</h3>
+<button class="btn" @onclick="(() => GenerateRandomOrder())">Generate random example order</button>
+<div class="row">
+
+    @if (OrdersList != null)
+    {
+        @foreach (var item in OrdersList)
+        {
+            <div class="col s4 m6">
+                <div class="card light-blue darken-1">
+                    <div class="card-content white-text">
+                        <span class="card-title">
+                            Order #@item.OrderID, status <strong>
+                                @if (item.IsAccepted)
+                                {
+                                    <p>Accepted</p>
+                                }
+                                else if (item.IsCancelled)
+                                {
+                                    <p>Cancelled</p>
+                                }
+                                else
+                                {
+                                    <p>Pending</p>
+                                }
+                            </strong>
+                        </span>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item name</th>
+                                    <th>Item id</th>
+                                    <th>Amount</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var orderLine in item.orderLine)
+                                {
+                                    <tr>
+                                        <td>@orderLine.product.Name</td>
+                                        <td>@orderLine.product.ProductID</td>
+                                        <td>@orderLine.Quantity</td>
+                                        <td>@orderLine.product.Price</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-action">
+                        <button class="s6 btn" @onclick="(() => AcceptOrder(item))">Accept</button>
+                        <button class="s6 btn" @onclick="(() => CancelOrder(item))">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    else
+    {
+        <p>No orders have been made</p>
+    }
+</div>
+@code {
+    private List<Order> OrdersList;
+    private User cachedUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cachedUser = JsonSerializer.Deserialize<User>(await JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "currentUser"));
+        await GetOrders();
+    }
+    private async Task GetOrders()
+    {
+        OrdersList = await OrderService.GetOrders(cachedUser.Token);
+    }
+    private async Task AcceptOrder(Order order)
+    {
+        await OrderService.AcceptOrder(order, cachedUser.Token);
+        await GetOrders();
+    }
+    private async Task CancelOrder(Order order)
+    {
+        await OrderService.CancelOrder(order, cachedUser.Token);
+        await GetOrders();
+    }
+    private async Task GenerateRandomOrder()
+    {
+        await OrderService.GenerateARandomOrder(cachedUser.Token);
+        await GetOrders();
+    }
+}

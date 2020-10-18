@@ -20,7 +20,6 @@ namespace BlazorApp.Data
             http.DefaultRequestHeaders.Add("password", password);
             User user = new User();
             user = JsonSerializer.Deserialize<User>(await http.GetStringAsync("token"));
-            Console.WriteLine("Getting login");
             if (user.Token == null || user.Token.Equals(""))
             {
                 throw new Exception("Incorrect credentials");

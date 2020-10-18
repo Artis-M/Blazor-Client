@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using BlazorApp.Data;
 using BlazorApp.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
+using BlazorApp.Data.Implementations;
 
 namespace BlazorApp
 {
@@ -21,6 +22,7 @@ namespace BlazorApp
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddSingleton<IInventoryService, InventoryService>();
+            builder.Services.AddSingleton<IOrderService, OrderServiceImp>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProvider>();
             builder.Services.AddAuthorizationCore();

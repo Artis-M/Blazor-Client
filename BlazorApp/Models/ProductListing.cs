@@ -10,11 +10,6 @@ namespace BlazorApp.Models
         public Product product { get; set; }
         public int TotalQuantity { get; set; }
         public int Reserved { get; set; }
-        public int AvailableQuantity { get; }
-
-        public ProductListing()
-        {
-            AvailableQuantity = TotalQuantity - Reserved;
-        }
+        public int AvailableQuantity { get; set;}
     }
 }

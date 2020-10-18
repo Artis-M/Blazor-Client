@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.Features;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http.Features;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +21,7 @@ namespace InventoryService.Models
         {
             if (!File.Exists(orderFile) || File.ReadAllText(orderFile).Equals("null"))
             {
+                orders = new List<Order>();
                 WriteOrdersToFile();
             }
             else
@@ -97,8 +99,8 @@ namespace InventoryService.Models
         //Saves the lists to a JSON file, to avoid having to use a proper database.
         public void WriteOrdersToFile()
         {
-            string productsAsJson = JsonSerializer.Serialize(orders);
-            File.WriteAllText(orderFile, productsAsJson);
+            string ordersAsJson = JsonSerializer.Serialize(orders);
+            File.WriteAllText(orderFile, ordersAsJson);
         }
         public void WriteProductsToFile()
         {
@@ -112,7 +114,7 @@ namespace InventoryService.Models
             File.WriteAllText(productListingFile, productsAsJson);
         }
 
-   
+
         //Adds a new product and then adds it to a listing
         public void AddProduct(Product product)
         {
@@ -136,6 +138,7 @@ namespace InventoryService.Models
                 TotalQuantity = 0,
                 Reserved = 0
             };
+            listing.CalculateAvailability();
             productListings.Add(listing);
             WriteProductListingsToFile();
         }
@@ -151,7 +154,7 @@ namespace InventoryService.Models
                 }
             }
             products.Remove(products.First(product => product.ProductID == productID));
-            
+
             return true;
         }
         public bool removeProductListing(ProductListing productListing)
@@ -164,9 +167,9 @@ namespace InventoryService.Models
                 Console.WriteLine("Listing Deleted");
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-              
+
             }
             return false;
 
@@ -179,7 +182,7 @@ namespace InventoryService.Models
                 productListings.Add(productListing);
                 WriteProductListingsToFile();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
 
             }
@@ -190,7 +193,7 @@ namespace InventoryService.Models
             {
                 productListings.Remove(productListings.First(item => item.product.ProductID == productListing.product.ProductID));
                 productListings.Add(productListing);
-               Product toEditProduct = products.First(item => item.ProductID == productListing.product.ProductID);
+                Product toEditProduct = products.First(item => item.ProductID == productListing.product.ProductID);
                 products.Remove(toEditProduct);
                 toEditProduct.Name = productListing.product.Name;
                 products.Add(toEditProduct);
@@ -220,14 +223,117 @@ namespace InventoryService.Models
 
             }
         }
+        public void GenerateOrder()
+        {
+            Random random = new Random();
+            int randomProdcutInt = random.Next(products.Count);
+            Console.WriteLine(randomProdcutInt);
+            int randomAmount = random.Next(100);
+            int OrderIdNew;
+
+            try
+            {
+                OrderIdNew = orders.Max(order => order.OrderID);
+            }
+            catch (Exception e)
+            {
+                OrderIdNew = 1;
+            }
+
+            OrderIdNew++;
+            OrderLine orderLine = new OrderLine
+            {
+                product = products[randomProdcutInt],
+                Quantity = randomAmount
+            };
+            randomProdcutInt = random.Next(products.Count);
+            randomAmount = random.Next(100);
+            OrderLine orderLine2 = new OrderLine
+            {
+                product = products[randomProdcutInt],
+                Quantity = randomAmount
+            };
+            List<OrderLine> orderLines = new List<OrderLine>();
+            orderLines.Add(orderLine);
+            orderLines.Add(orderLine2);
+            Order newOrder = new Order
+            {
+                OrderID = OrderIdNew,
+                orderLine = orderLines,
+            };
+            newOrder.CalculatePrice();
+            orders.Add(newOrder);
+            ProductListing toEditPL1 = productListings.First(productLi => orderLine.product.ProductID == productLi.product.ProductID);
+            ProductListing toEditPL2 = productListings.First(productLi => orderLine2.product.ProductID == productLi.product.ProductID);
+
+            productListings.Remove(productListings.First(productLi => orderLine.product.ProductID == productLi.product.ProductID));
+            productListings.Remove(productListings.First(productLi => orderLine2.product.ProductID == productLi.product.ProductID));
+
+            toEditPL1.Reserved += orderLine.Quantity;
+            toEditPL2.Reserved += orderLine2.Quantity;
+            toEditPL1.CalculateAvailability();
+            toEditPL2.CalculateAvailability();
+            productListings.Add(toEditPL1);
+            productListings.Add(toEditPL2);
+            WriteProductListingsToFile();
+            WriteOrdersToFile();
+        }
+        public void AcceptOrder(Order order)
+        {
+            if (!order.IsCancelled)
+            {
+                order.IsAccepted = true;
+                orders.Remove(orders.First(orderItem => orderItem.OrderID == order.OrderID));
+                orders.Add(order);
+                WriteOrdersToFile();
+                foreach (var item in order.orderLine)
+                {
+                    Product prod = item.product;
+                    ProductListing toEdit = productListings.First(itemPD => itemPD.product.ProductID == prod.ProductID);
+                    productListings.Remove(toEdit);
+                    toEdit.Reserved -= item.Quantity;
+                    toEdit.TotalQuantity -= item.Quantity;
+                    productListings.Add(toEdit);
+                    WriteProductListingsToFile();
+                }
+            }
+        }
+        public void CancelOrder(Order order)
+        {
+            if (!order.IsAccepted)
+            {
+                order.IsCancelled = true;
+                orders.Remove(orders.First(orderItem => orderItem.OrderID == order.OrderID));
+                orders.Add(order);
+                foreach (var item in order.orderLine)
+                {
+                    Product prod = item.product;
+                    ProductListing toEdit = productListings.First(itemPD => itemPD.product.ProductID == prod.ProductID);
+                    productListings.Remove(toEdit);
+                    toEdit.Reserved -= item.Quantity;
+                    productListings.Add(toEdit);
+                    WriteProductListingsToFile();
+                }
+                WriteOrdersToFile();
+            }
+        }
         //Returns various lists.
         public List<ProductListing> GetProductListings()
         {
+            foreach (var item in productListings)
+            {
+                item.CalculateAvailability();
+            }
+            WriteProductListingsToFile();
             return productListings;
         }
         public List<Product> GetProducts()
         {
             return products;
+        }
+        public List<Order> GetOrders()
+        {
+            return orders;
         }
     }
 }

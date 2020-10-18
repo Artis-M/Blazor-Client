@@ -137,7 +137,6 @@
     }
     private async Task getProductListings()
     {
-        Console.WriteLine(cachedUser.Token);
         productListings = await InventoryService.getProductListings(cachedUser.Token);
     }
     private async Task addProduct()
