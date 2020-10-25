@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.Json;
+using InventoryService.Models;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace InventoryService.Models
 {
@@ -21,7 +23,7 @@ namespace InventoryService.Models
                 {
                     Username = "admin",
                     Password = "admin",
-                    Token = "test"
+                    Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
                 };
                 users.Add(admin);
                 string json = JsonSerializer.Serialize(users);
@@ -33,7 +35,17 @@ namespace InventoryService.Models
                 users = JsonSerializer.Deserialize<List<User>>(content);
             }
         }
-
+        public void SaveUsers()
+        {
+            string usersAsJson = JsonSerializer.Serialize(users);
+            File.WriteAllText(usersFile, usersAsJson);
+        }
+        public void GenerateToken(User user)
+        {
+            string token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            users.First(item => item == user).Token = token;
+            SaveUsers();
+        }
         public User checkUser(string username, string password)
         {
             User userBuffer = new User();
@@ -55,6 +67,17 @@ namespace InventoryService.Models
                 throw new Exception("Incorrect password");
             }
             return userBuffer;
+        }
+        public bool isTokenValid(string token)
+        {
+            foreach(var item in users)
+            {
+                if (item.Token.Equals(token))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

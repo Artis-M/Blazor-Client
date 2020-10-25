@@ -1,5 +1,118 @@
 ﻿@page "/"
 @using LoginComponent
-    <p>Main page, would be nice to add a chart of in stock items or something</p>
-    <Login></Login>
+@using System.Text.Json
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using BlazorApp.Data
+@using BlazorApp.Models
+@inject IOrderService OrderService
+@inject IInventoryService InventoryService
+@inject IJSRuntime JsRuntime
+@inject NavigationManager navigation
+@attribute [Authorize]
 
+
+    @if (isLow)
+    {
+        <h3>Product Warnings!</h3>
+    }
+    @if (ProductList != null)
+    {
+        <div class="row">
+            @foreach (var item in ProductList)
+            {
+                if (item.AvailableQuantity < 10)
+                {
+                    isLow = true;
+                    <div class="col s12 m4">
+                        <div class="card red accent-2">
+                            <div class="card-content white-text">
+                                <span class="card-title">@item.product.Name #@item.product.ProductID</span>
+                                <p>Low quantity of product remaining! Please consider restocking the item.</p>
+                                <p>Total remaining available quantity:</p>
+                                <label class="white-text" style="font-weight: bolder; font-size: 15pt;">@item.AvailableQuantity</label>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+    <h4>Recent Orders</h4>
+    <div class="row">
+        @if (OrdersList != null)
+        {
+            @foreach (var item in OrdersList)
+            {
+                @if (OrdersCount < 3)
+                {
+                    <div class="col s12 m4">
+                        <div class="card blue darken-2">
+                            <div class="card-content white-text">
+                                <span class="card-title">
+                                    Order #@item.OrderID, status <strong>
+                                        @if (item.IsAccepted)
+                                        {
+                                            <p>Accepted</p>
+                                        }
+                                        else if (item.IsCancelled)
+                                        {
+                                            <p>Cancelled</p>
+                                        }
+                                        else
+                                        {
+                                            <p>Pending</p>
+                                        }
+                                    </strong>
+                                </span>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Item name</th>
+                                            <th>Item id</th>
+                                            <th>Amount</th>
+                                            <th>Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var orderLine in item.orderLine)
+                                        {
+                                            <tr>
+                                                <td>@orderLine.product.Name</td>
+                                                <td>@orderLine.product.ProductID</td>
+                                                <td>@orderLine.Quantity</td>
+                                                <td>@orderLine.product.Price</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    OrdersCount++;
+                }
+            }
+        }
+    </div>
+    @code{
+        private List<Order> OrdersList;
+        private List<ProductListing> ProductList;
+        private User cachedUser;
+        private int OrdersCount = 0;
+        private bool isLow = false;
+
+        protected override async Task OnInitializedAsync()
+        {
+            cachedUser = JsonSerializer.Deserialize<User>(await JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "currentUser"));
+            await GetOrders();
+            await getProductListings();
+        }
+        private async Task GetOrders()
+        {
+            OrdersList = await OrderService.GetOrders(cachedUser.Token);
+        }
+        private async Task getProductListings()
+        {
+            ProductList = await InventoryService.getProductListings(cachedUser.Token);
+        }
+    }

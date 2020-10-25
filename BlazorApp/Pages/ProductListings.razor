@@ -4,27 +4,29 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Text.Json
-@inject NavigationManager navMan
 @inject IInventoryService InventoryService
 @inject AuthenticationStateProvider Authentication
 @inject IJSRuntime JsRuntime
+
 @attribute [Authorize]
+
 <h3>Product Listings</h3>
 <ul>
     <li>Reserved - Product quantity that is included included in an order</li>
     <li>Available - Available quantity of products</li>
-    <li>Available - Available quantity of products ignoring orders</li>
+    <li>Total Quantity - Available quantity of products ignoring orders</li>
 </ul>
 <h6>Add new product</h6>
 <div class="row">
     <EditForm class="s12" Model="@newProdcut" OnValidSubmit="@addProduct">
         <div class="row">
             <div class="input-field col s5">
-                <InputText placeholder="Name" @bind-Value="newProdcut.Name"></InputText>
+                <InputText type="text" id="username" @bind-Value="newProdcut.Name"></InputText>
+                <label for="username">Name:</label>
             </div>
             <div class="input-field col s5">
-                <label>Price:</label>
-                <InputNumber placeholder="Price" @bind-Value="newProdcut.Price"></InputNumber>
+                <InputNumber id="price" @bind-Value="newProdcut.Price"></InputNumber>
+                <label for="price">Price:</label>
             </div>
             <div class="input-field col s2">
                 <button class="btn" type="submit">Add</button>

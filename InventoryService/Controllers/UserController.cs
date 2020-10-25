@@ -33,10 +33,12 @@ namespace InventoryService.Controllers
 
             }
             User buffer = userManager.checkUser(username, password);
+            userManager.GenerateToken(buffer);
+            buffer = userManager.checkUser(username, password);
             clientUser userToSend = new clientUser
             {
                 Username = buffer.Username,
-            Token = buffer.Token
+                Token = buffer.Token
             };
           
             string json = JsonSerializer.Serialize(userToSend);

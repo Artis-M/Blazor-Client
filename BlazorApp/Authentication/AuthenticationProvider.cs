@@ -71,7 +71,7 @@ namespace BlazorApp.Authentication
         {
             cachedUser = null;
             var user = new ClaimsPrincipal(new ClaimsIdentity());
-            jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "currentUser", "");
+            jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "currentUser", null);
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
         }
 

@@ -4,11 +4,12 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
+@inject NavigationManager navigation
 
 <AuthorizeView>
     <NotAuthorized>
         <div class="row login-row">
+            <h5>Please login.</h5>
             <form @onsubmit="PerformLogin">
                 <div class="input-field">
                     <input type="text" placeholder="Username" @bind-value="username" />
@@ -41,6 +42,7 @@
             await ((AuthenticationProvider)AuthenticationStateProvider).ValidateLogin(username, password);
             username = "";
             password = "";
+            navigation.NavigateTo("");
         }
         catch (Exception e)
         {

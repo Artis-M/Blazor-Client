@@ -15,6 +15,7 @@ namespace InventoryService.Controllers
     [ApiController]
     public class InventoryController : ControllerBase
     {
+        UserManager userManager = new UserManager();
         InventoryManager inventoryManager = new InventoryManager();
 
         // GET api/inventory/listings
@@ -26,8 +27,8 @@ namespace InventoryService.Controllers
             try
             {
                 string token = headers.GetCommaSeparatedValues("token").First();
-                Console.WriteLine(token + " token value");
-                if (token.Equals("test"))
+                Console.WriteLine(" token value: " + token);
+                if (userManager.isTokenValid(token))
                 {
                     string rep = JsonSerializer.Serialize(inventoryManager.GetProductListings());
                     return rep;
@@ -58,8 +59,8 @@ namespace InventoryService.Controllers
             try
             {
                 string token = headers.GetCommaSeparatedValues("token").First();
-                     Console.WriteLine(token + " token value");
-                if (token.Equals("test"))
+                     Console.WriteLine(" token value: " + token);
+                if (userManager.isTokenValid(token))
                 {
                     Console.WriteLine("Success");
                     inventoryManager.AddProduct(product);
@@ -80,8 +81,8 @@ namespace InventoryService.Controllers
             try
             {
                 string token = headers.GetCommaSeparatedValues("token").First();
-                Console.WriteLine(token + " token value");
-                if (token.Equals("test"))
+                Console.WriteLine(" token value: " + token);
+                if (userManager.isTokenValid(token))
                 {
                     Console.WriteLine("Success");
                     inventoryManager.removeProductListing(productListing);
@@ -102,8 +103,8 @@ namespace InventoryService.Controllers
             try
             {
                 string token = headers.GetCommaSeparatedValues("token").First();
-                Console.WriteLine(token + " token value");
-                if (token.Equals("test"))
+                Console.WriteLine(" token value: " + token);
+                if (userManager.isTokenValid(token))
                 {
                     Console.WriteLine("Success");
                     inventoryManager.editProductListing(productListing);
@@ -124,8 +125,8 @@ namespace InventoryService.Controllers
             try
             {
                 string token = headers.GetCommaSeparatedValues("token").First();
-                Console.WriteLine(token + " token value");
-                if (token.Equals("test"))
+                Console.WriteLine(" token value: " + token);
+                if (userManager.isTokenValid(token))
                 {
                     Console.WriteLine("Success");
                     inventoryManager.editProductListingName(productListing);
@@ -146,8 +147,8 @@ namespace InventoryService.Controllers
             try
             {
                 string token = headers.GetCommaSeparatedValues("token").First();
-                Console.WriteLine(token + " token value");
-                if (token.Equals("test"))
+                Console.WriteLine("token value: " + token);
+                if (userManager.isTokenValid(token))
                 {
                     Console.WriteLine("Success");
                     inventoryManager.editProductListingPrice(productListing);

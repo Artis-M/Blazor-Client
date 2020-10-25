@@ -13,12 +13,13 @@ namespace BlazorApp.Data
 {
     public class InventoryService : IInventoryService
     {
-        HttpClient http = new HttpClient
-        {
-            BaseAddress = new Uri("https://localhost:5001/")
-        };
+        string uri = "https://localhost:5001/";
         public async Task<List<ProductListing>> getProductListings(string token)
         {
+            HttpClient http = new HttpClient
+            {
+                BaseAddress = new Uri(uri)
+            };
             List<ProductListing> listings = new List<ProductListing>();
             http.DefaultRequestHeaders.Add("token", token);
             string response = await http.GetStringAsync("api/inventory/listings");
@@ -36,30 +37,50 @@ namespace BlazorApp.Data
         }
         public async Task addProduct(Product product, string token)
         {
+            HttpClient http = new HttpClient
+            {
+                BaseAddress = new Uri(uri)
+            };
             http.DefaultRequestHeaders.Add("token", token);
             await http.PostAsJsonAsync("api/inventory/add/product", product);
         }
 
         public async Task removeProductListing(ProductListing productListing, string token)
         {
+            HttpClient http = new HttpClient
+            {
+                BaseAddress = new Uri(uri)
+            };
             http.DefaultRequestHeaders.Add("token", token);
             await http.PostAsJsonAsync("api/inventory/remove/productListing", productListing);
         }
 
         public async Task editProductListing(ProductListing productListing, string token)
         {
+            HttpClient http = new HttpClient
+            {
+                BaseAddress = new Uri(uri)
+            };
             http.DefaultRequestHeaders.Add("token", token);
             await http.PostAsJsonAsync("api/inventory/edit/productListing", productListing);
         }
 
         public async Task editProductListingName(ProductListing productListing, string token)
         {
+            HttpClient http = new HttpClient
+            {
+                BaseAddress = new Uri(uri)
+            };
             http.DefaultRequestHeaders.Add("token", token);
             await http.PostAsJsonAsync("api/inventory/edit/productListingName", productListing);
         }
 
         public async Task editProductListingPrice(ProductListing productListing, string token)
         {
+            HttpClient http = new HttpClient
+            {
+                BaseAddress = new Uri(uri)
+            };
             http.DefaultRequestHeaders.Add("token", token);
             await http.PostAsJsonAsync("api/inventory/edit/productListingPrice", productListing);
         }

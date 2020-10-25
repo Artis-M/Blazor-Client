@@ -280,7 +280,7 @@ namespace InventoryService.Models
         }
         public void AcceptOrder(Order order)
         {
-            if (!order.IsCancelled)
+            if (!order.IsCancelled && !order.IsAccepted)
             {
                 order.IsAccepted = true;
                 orders.Remove(orders.First(orderItem => orderItem.OrderID == order.OrderID));
@@ -300,7 +300,7 @@ namespace InventoryService.Models
         }
         public void CancelOrder(Order order)
         {
-            if (!order.IsAccepted)
+            if (!order.IsCancelled && !order.IsAccepted)
             {
                 order.IsCancelled = true;
                 orders.Remove(orders.First(orderItem => orderItem.OrderID == order.OrderID));

@@ -1,0 +1,29 @@
+﻿@page "/logout"
+@namespace LogoutComponent
+@using BlazorApp.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager navigation
+
+<AuthorizeView>
+    <Authorized>
+        <div class="s4">
+            <button class="waves-effect waves-light red accent-2 btn" @onclick="PerformLogout">
+                Log out
+            </button>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    public async Task PerformLogout()
+    {
+        try
+        {
+            ((AuthenticationProvider)AuthenticationStateProvider).Logout();
+            navigation.NavigateTo("login");
+        }
+        catch (Exception e) { }
+    }
+}

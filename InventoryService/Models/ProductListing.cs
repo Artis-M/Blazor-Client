@@ -13,7 +13,7 @@ namespace InventoryService.Models
         public int AvailableQuantity { get; set; }
         public void CalculateAvailability()
         {
-            AvailableQuantity = TotalQuantity - Reserved;
+            AvailableQuantity = TotalQuantity + (- Reserved);
         }
     }
 }

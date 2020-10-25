@@ -16,6 +16,8 @@ namespace InventoryService.Controllers
     {
 
         InventoryManager inventoryManager = new InventoryManager();
+        UserManager userManager = new UserManager();
+
         [HttpGet("all")]
         public string Get()
         {
@@ -24,8 +26,8 @@ namespace InventoryService.Controllers
             try
             {
                 string token = headers.GetCommaSeparatedValues("token").First();
-                Console.WriteLine(token + " token value");
-                if (token.Equals("test"))
+                Console.WriteLine(" token value: " + token);
+                if (userManager.isTokenValid(token))
                 {
                     string rep = JsonSerializer.Serialize(inventoryManager.GetOrders());
                     return rep;
@@ -47,8 +49,8 @@ namespace InventoryService.Controllers
             try
             {
                 string token = headers.GetCommaSeparatedValues("token").First();
-                Console.WriteLine(token + " token value");
-                if (token.Equals("test"))
+                Console.WriteLine(" token value: " + token);
+                if (userManager.isTokenValid(token))
                 {
                     inventoryManager.CancelOrder(order);
 
@@ -70,8 +72,8 @@ namespace InventoryService.Controllers
             try
             {
                 string token = headers.GetCommaSeparatedValues("token").First();
-                Console.WriteLine(token + " token value");
-                if (token.Equals("test"))
+                Console.WriteLine(" token value: " + token);
+                if (userManager.isTokenValid(token))
                 {
                     inventoryManager.AcceptOrder(order);
                 }
@@ -93,8 +95,8 @@ namespace InventoryService.Controllers
             try
             {
                 string token = headers.GetCommaSeparatedValues("token").First();
-                Console.WriteLine(token + " token value");
-                if (token.Equals("test"))
+                Console.WriteLine(" token value: " + token);
+                if (userManager.isTokenValid(token))
                 {
                     inventoryManager.GenerateOrder();
                 }
