@@ -10,8 +10,8 @@ Current features:
 - Add/Remove quantity to a product.
 - Edit name of an product.
 - Orders page where orders can be accepted or canceled.
+- Generates unique tokens.
 
 To be added:
 
-  - Generate unique tokens with expiry
-  - Fix the CSS and make the UI more efficent.
+  - Have tokens expire after a certain period of time.
